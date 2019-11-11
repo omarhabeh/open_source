@@ -9,41 +9,28 @@ FILE * fin = fopen("simplefs.bin", "r");
 struct inode slash;
 	fseek(fin, sizeof(struct sb), SEEK_SET);
 	fread(&slash,sizeof(slash),1,fin);
-
+	struct dir_entry entry ;
 	int datablocknum = slash.datablocks[0];
-	fseek(fin,sizeof(struct sb)+sizeof(struct inode)*32,SEEK_SET+datablocknum*512);
-	struct dir_entry entry;
-	fread(&entry,sizeof(entry),1,fin);
 	printf("files :\n");
-	for ( int i =0;i<DIRENTRYSIZE *3;i=i+32 ){
-	fseek(fin,sizeof(struct sb)+sizeof(struct inode)*32,SEEK_SET+datablocknum*512+i);
+	for ( int i =0;i<DIRENTRYSIZE *4;i=i+32 ){
+	fseek(fin,sizeof(struct sb)+sizeof(struct inode)*32,SEEK_SET+i);//32++
 	fread(&entry,sizeof(entry),1,fin);
-	
-		if (entry.inode_num == 1){
-	fread(&entry,sizeof(slash),1,fin);
-	printf("test \n");
-	printf("|_ %s\n", entry.name );
-
-	
-	}
-	else {
 	printf(" %s\n",entry.name );
 	}
+//+datablocknum*512
 	
-
-	}	
-	/*struct inode test;
+	struct inode test;
 	fseek(fin, sizeof(struct sb)+sizeof(slash), SEEK_SET);
 	fread(&test,sizeof(test),1,fin);
 	int datablocknum2 = test.datablocks[0];
 	printf("%d= \n",datablocknum2);
 	struct dir_entry entry2;
-	//for ( int i =48;i<DIRENTRYSIZE * 49;i=i+32 ){
-	fseek(fin,sizeof(struct sb)+sizeof(struct inode)*32,SEEK_SET+datablocknum*512+96);
+	
+	for ( int i =0;i<DIRENTRYSIZE *4;i=i+32 ){
+	fseek(fin,sizeof(struct sb)+sizeof(struct inode)*32,SEEK_SET+512+i);//512++
 	fread(&entry2,sizeof(entry2),1,fin);
-	printf("%d  %s\n", entry2.inode_num,entry2.name );
-printf(" -- %d ",i);
-}*/
+	printf("%s\n", entry2.name );
+}
 
 
 
