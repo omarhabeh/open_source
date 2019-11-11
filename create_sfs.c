@@ -14,19 +14,11 @@ int main(){
 
 	struct inode slash;
 	slash.type = DIR;
-	slash.size = DIRENTRYSIZE * 5; //. and ..
+	slash.size = DIRENTRYSIZE * 4; //. and ..
 	slash.datablocks[0] = 0;
 
 
 	fwrite(&slash,sizeof(slash),1,fout);
-	
-	/*struct inode test;
-	test.type = DIR;
-	test.size = DIRENTRYSIZE * 1;//tester
-	test.datablocks[0] = 1;
-
-
-	fwrite(&test,sizeof(test),1,fout);*/
 
 	struct dir_entry dot;
 	strcpy(dot.name, ".");
@@ -36,13 +28,9 @@ int main(){
 	strcpy(dotdot.name, "..");
 	dotdot.inode_num = 0;
 	
-	
-	
 	fseek(fout,sizeof(super_block)+NUMOFINODES*sizeof(struct inode) ,SEEK_SET);
 	fwrite(&dot,sizeof(dot),1,fout);
 	fwrite(&dotdot, sizeof(dotdot),1,fout);	
-	/*fseek(fout,sizeof(super_block)+NUMOFINODES*sizeof(struct inode)*512/32,SEEK_SET);
-	fwrite(&tester, sizeof(tester),1,fout);	*/
 	fflush(fout);
 
 

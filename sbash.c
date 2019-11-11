@@ -40,13 +40,28 @@ void ls(FILE *fin){
 	get_inode_struct(fin,&inostr,0);
 	printf("/\n");
 	int i;
-	for(i = 0; i <inostr.size/32; i++){
-		get_dir_entry(fin,&de,0,i);
-		printf("\t%s\n",de.name);
-	}	
+	int j;
+	for ( j =0 ; j <=1;j++){
+		for(i = 0; i <inostr.size/32; i++){
+				get_dir_entry(fin,&de,j,i);
+				if(strcmp(de.name,"\n")==0){}
+				else{
+				printf("\t%s\n ",de.name);
+				}
+			
+		}
+	}		
 }
-void new_dir(FILE *fin,int no ) { 
-	printf("%d",no);
+
+void mkdir(FILE *fin,char command[]){
+
+	fseek(fin,sizeof(struct sb),SEEK_SET);
+	struct inode inostr;
+	inostr.datablocks[1]=1;
+	int no=1;
+	struct dir_entry de;
+	strcpy(de.name, command);
+	de.inode_num = 2;
 	struct dir_entry dot;
 	strcpy(dot.name, ".");
 	dot.inode_num = 0;
@@ -55,22 +70,12 @@ void new_dir(FILE *fin,int no ) {
 	strcpy(dotdot.name, "..");
 	dotdot.inode_num = 0;
 	
-	fseek(fin,sizeof(struct sb)+NUMOFINODES*sizeof(struct inode),SEEK_SET+96);
+	fseek(fin,sizeof(struct sb)+sizeof(struct inode)*32+512*1+1*sizeof(struct dir_entry),SEEK_SET);
+	fwrite(&de,sizeof(de),1,fin);
 	fwrite(&dot,sizeof(dot),1,fin);
 	fwrite(&dotdot,sizeof(dotdot),1,fin);
 	fflush(fin);
-		
-}
-void mkdir(FILE *fin,char command[]){
-	struct inode inostr;
-	int no=1;
-	struct dir_entry de;
-	strcpy(de.name, command);
-	de.inode_num = 2;
-	get_inode_struct(fin,&inostr,0);
-	if (fread(de,sizeof(struct dir_entry),1,fin)==0){
-	
-}
-	fwrite(&de,sizeof(de),1,fin);
-	fflush(fin);
+
+
+
 }
