@@ -13,9 +13,11 @@ void mkfile(FILE *fin,char f[],char s[]);
 void write_string(FILE *fin , char str[],int blokno);
 void cat (FILE *fin , char file[]);
 void ifFile(FILE *fin,char command[],char ans[128]);
+void addIno(FILE *fin);
 int c=1;
 int size=1;
 char current[]="/";
+int ino=2;
 int main(){
 	FILE *fin = fopen("simplefs.bin", "r+");
 
@@ -66,6 +68,8 @@ void write_dir_entry(FILE *fin,struct dir_entry* de,int db_num,int dir_entry_num
 	
 }
 void ifDIr(FILE *fin,char command[]){
+		
+	
 		int la=0;
 		struct dir_entry de;
 		for (int i=0;i<size;i++){
@@ -73,8 +77,13 @@ void ifDIr(FILE *fin,char command[]){
 		if(strcmp(command,de.name)==0){
 		la++;
 			if(de.inode_num>=2){
-			strcpy(current,("\\/%s\\/",command));	
-			}
+				if(strcmp(current,"/")!=0){
+					strcat(current,(" %s> ",command));
+				}
+				else{
+				strcpy(current,("\\/%s\\/",command));	
+				}			
+}
 			else {
 			printf("%s is not a drectory\n",command);
 			break;
@@ -128,6 +137,7 @@ void ls(FILE *fin){
 		get_dir_entry(fin,&de,1,i);
 			if(de.inode_num>=2){
 				int c=de.inode_num;
+				if(c!=ino){c=ino;};
 				for (int j =1;j<=c;j++){
 				get_dir_entry(fin,&de,1,i+j);
 				printf("%s \n",de.name);
@@ -154,6 +164,8 @@ void mkdir(FILE *fin,char command[]){
 	write_dir_entry(fin,&dot,1,c);c++;
 	write_dir_entry(fin,&dotdot,1,c);c++;
 	size+=3;
+	if(strcmp(current,"/")!=0){
+	addIno(fin);}
 }
 void cd (FILE *fin , char command[]){
 	if(strcmp(command,"..")==0){
@@ -176,11 +188,27 @@ void mkfile(FILE *fin,char f[],char s[]){
 	write_dir_entry(fin,&de,1,c);
 	size++;
 	write_string(fin,s,c);c++;
+	if(strcmp(current,"/")!=0){
+	addIno(fin);}
 }
 void write_string(FILE *fin , char str[],int blokno){
 fseek(fin,sizeof(struct sb)+sizeof(struct inode)*32+512*2+blokno*sizeof(struct dir_entry),SEEK_SET);
 fwrite(str,128,1,fin);
 fflush(fin);
+}
+void addIno(FILE *fin){
+		struct dir_entry de;
+		for (int i=0;i<size;i++){
+		get_dir_entry(fin,&de,1,i);
+		if(strcmp(current,de.name)==0){
+			de.inode_num++;
+			ino++;
+			
+			
+		}
+			
+	}
+
 }
 void cat (FILE *fin , char file[]){
 	char str[128];
