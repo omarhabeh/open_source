@@ -14,7 +14,7 @@ int main(){
 
 	struct inode slash;
 	slash.type = DIR;
-	slash.size = DIRENTRYSIZE * 4; //. and ..
+	slash.size = DIRENTRYSIZE * 2; //. and ..
 	slash.datablocks[0] = 0;
 
 
